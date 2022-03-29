@@ -1,0 +1,6 @@
+.table td, th{
+    text-align: left;
+    width: 15rem;
+    font-size: calc(10px + (24 - 12) * ((100vw - 300px) / ( 1600 - 300)));
+
+}
