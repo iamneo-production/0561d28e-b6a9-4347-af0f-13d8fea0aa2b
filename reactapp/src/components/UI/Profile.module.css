@@ -1,0 +1,16 @@
+.dropdown{
+    padding: 5px;
+}
+.dropdown-content li{
+    color: white;
+    padding: 2px;
+    text-decoration: none;
+    
+    
+}
+.dropdown-content {
+    color: white;
+    padding: 2px;
+    display: block;
+    text-decoration: none;
+}
