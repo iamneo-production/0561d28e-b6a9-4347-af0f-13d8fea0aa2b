@@ -224,27 +224,14 @@ namespace DatabaseController
         public string editUser(JobSeekerModel js)
         {
             string res = "";
-            //string userrole = "";
-            //if(!isUserPres(js.email))
             {
                 string sql1 = "";
-                //if (getUserrole("select userrole from ch_user where id =" + js.personId) == "jobSeeker")
-                // {
                 sql1 = "update jobSeeker set name='" + js.personName + "', email='" + js.email + "', experience='" + js.personExp + "', phone='" + js.personPhone + "', address='" + js.personAddress + "' where id=" + js.personId;
-                //}
-                // else
-                // {
-                //     sql1 = "update jobProvider set name='" + js.personName + "', email='" + js.email + "', phone='" + js.personPhone + "', address='" + js.personAddress + "' where id=" + js.personId;
-                // }
                 string sql2 = "update ch_user set username='" + js.personName + "', email='" + js.email + "' where id=" + js.personId;
                 Execute(sql1);
                 Execute(sql2);
                 res += "Profile Updated";
             }
-            /* else
-             {
-                 res += "Email already exists..";
-             }*/
             return res;
         }
         public string deleteUser(string id)
@@ -315,22 +302,6 @@ namespace DatabaseController
             string sql = "select j.*, a.selected from job as j join appliedJobs as a on j.jobId = a.jobId where a.jobSeekerId = " + id;
             return executeAppliedJobSeeker(sql, id);
         }
-
-        /*public string deleteAppliedJobs(string id)
-        {
-            try
-            {
-                string sql = "delete from appliedJobs where jobId=" + id;
-                Execute(sql);
-                return "Applied job deleted";
-            }
-            catch (Exception ex)
-            {
-                return "Bad Reuest";
-            }
-        }*/
-
-
         public bool acceptJobSeeker(int id, int jobId)
         {
             try
@@ -565,18 +536,6 @@ namespace DatabaseController
                 return "Bad Request";
             }
         }
-        /*public string deleteProfile(string id)
-        {
-            try
-            {
-                string sql = "delete from admin where id=" + id;
-                return "Profile deleted";
-            }
-            catch( Exception e)
-            {
-                return "Bad Request";
-            }
-        }*/
         public string editProfile(string id, AdminModel data)
         {
             try
