@@ -1,0 +1,621 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+using CookHiring.Models;
+
+namespace DatabaseController
+{
+    public class DataAccessLayer
+    {
+        private string con = "Data Source=LAPTOP-FKFUSU87\\SQLEXPRESS; Initial Catalog=Virtusa; Integrated Security=True";
+        //Common Methods
+        public void Execute(string sqlstring)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            cmd.ExecuteNonQuery();
+            sqlcon.Close();
+        }
+
+        //AuthController
+
+        public object isUserPresent(LoginModel login)
+        {
+            string sqlstring = "select id, userrole, username from ch_user where email='" + login.email + "' and password='" + login.password + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            string id = "", userrole = "", username = "";
+            var obj = new List<object>();
+            cmd.ExecuteNonQuery();
+            using (SqlDataReader sd = cmd.ExecuteReader())
+            {
+                while (sd.Read())
+                {
+                    id += sd[0].ToString();
+                    userrole += sd[1].ToString();
+                    username += sd[2].ToString();
+                    var ob = new
+                    {
+                        id = id,
+                        username = username,
+                        userrole = userrole
+                    };
+                    obj.Add(ob);
+
+                }
+            }
+            if (id.Length > 0)
+            {
+                return obj;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        public bool isUserPres(string email)
+        {
+            string sqlstring = "select 1 from ch_user where email='" + email + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
+            bool flag = sd.Read() ? true : false;
+            return flag;
+        }
+        public bool isAdminPresent(LoginModel login)
+        {
+            string sqlstring1 = "select 1 from admin where email='" + login.email + "' and password='" + login.password + "'";
+            string sqlstring2 = "select 1 from admin where email='" + login.email + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd1 = new SqlCommand(sqlstring1, sqlcon);
+            SqlCommand cmd2 = new SqlCommand(sqlstring2, sqlcon);
+            SqlDataReader sd = cmd1.ExecuteReader();
+            bool flag = sd.Read() ? true : false;
+            sd.Close();
+            sd = cmd2.ExecuteReader();
+            bool signup = sd.Read() ? true : false;
+            sd.Close();
+            sqlcon.Close();
+            return flag && signup;
+        }
+        public int getUserId(string sqlstring)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            int id = int.Parse(cmd.ExecuteScalar().ToString());
+            sqlcon.Close();
+            Console.WriteLine("Primar Key: ", id);
+            return id;
+        }
+        public void insertJobSeeker(UserModel user)
+        {
+            string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
+            int id = getUserId(sql);
+            sql = "Insert into jobSeeker(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            Execute(sql);
+        }
+        public void insertJobProvider(UserModel user)
+        {
+            string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
+            int id = getUserId(sql);
+            sql = "Insert into jobProvider(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            Execute(sql);
+        }
+        public void insertAdmin(AdminModel admin)
+        {
+            string sql = "Insert into admin values('" + admin.username + "', '" + admin.email + "', '" + admin.password + "', '" + admin.mobileNumber + "')";
+            Execute(sql);
+        }
+
+        //UserController
+
+        public object executeGetJobSeeker(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["id"] = reader["id"].ToString();
+                column["username"] = reader["username"].ToString();
+                column["name"] = reader["name"].ToString();
+                column["email"] = reader["email"].ToString();
+                column["password"] = reader["password"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                column["experience"] = reader["experience"].ToString();
+                column["address"] = reader["address"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object executeGetJobSeekerById(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["id"] = reader["id"].ToString();
+                column["name"] = reader["name"].ToString();
+                column["email"] = reader["email"].ToString();
+                column["phone"] = reader["phone"].ToString();
+                column["experience"] = reader["experience"].ToString();
+                column["address"] = reader["address"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object getJobSeeker()
+        {
+            string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
+            return executeGetJobSeeker(sql);
+
+        }
+        public object executeGetJobProvivder(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["id"] = reader["id"].ToString();
+                column["name"] = reader["username"].ToString();
+                column["email"] = reader["email"].ToString();
+                column["password"] = reader["password"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object getJobProvider()
+        {
+            string sql = "select * from ch_user where userrole='Job Provider'";
+            return executeGetJobProvivder(sql);
+
+        }
+        public string getUserrole(string sql)
+        {
+            string userrole = "";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            cmd.ExecuteNonQuery();
+            using (SqlDataReader sd = cmd.ExecuteReader())
+            {
+                while (sd.Read())
+                {
+                    userrole = sd[0].ToString();
+                }
+            }
+            if (userrole == "Job Provider")
+            {
+                userrole = "jobProvider";
+            }
+            else
+            {
+                userrole = "jobSeeker";
+            }
+            return userrole;
+        }
+        public string editUser(JobSeekerModel js)
+        {
+            string res = "";
+            //string userrole = "";
+            //if(!isUserPres(js.email))
+            {
+                string sql1 = "";
+                //if (getUserrole("select userrole from ch_user where id =" + js.personId) == "jobSeeker")
+                // {
+                sql1 = "update jobSeeker set name='" + js.personName + "', email='" + js.email + "', experience='" + js.personExp + "', phone='" + js.personPhone + "', address='" + js.personAddress + "' where id=" + js.personId;
+                //}
+                // else
+                // {
+                //     sql1 = "update jobProvider set name='" + js.personName + "', email='" + js.email + "', phone='" + js.personPhone + "', address='" + js.personAddress + "' where id=" + js.personId;
+                // }
+                string sql2 = "update ch_user set username='" + js.personName + "', email='" + js.email + "' where id=" + js.personId;
+                Execute(sql1);
+                Execute(sql2);
+                res += "Profile Updated";
+            }
+            /* else
+             {
+                 res += "Email already exists..";
+             }*/
+            return res;
+        }
+        public string deleteUser(string id)
+        {
+            try
+            {
+                string sql1 = "delete from jobSeeker where id=" + id;
+                string sql2 = "delete from ch_user where id=" + id;
+                Execute(sql1);
+                Execute(sql2);
+                return "Profile deleted";
+            }
+            catch (Exception ex)
+            {
+                return "Bad Request";
+            }
+        }
+
+        public string applyJob(string jobSeekerId, string jobId)
+        {
+            try
+            {
+                string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + jobSeekerId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
+                Execute(sql);
+                return "Job applied";
+            }
+            catch (Exception ex)
+            {
+                return "Bad Request";
+            }
+        }
+        public object executeAppliedJobSeeker(string sql, string id)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["jobId"] = reader["jobId"].ToString();
+                column["jobDescription"] = reader["jobDescription"].ToString();
+                column["jobLocation"] = reader["jobLocation"].ToString();
+                column["fromDate"] = reader["fromDate"].ToString();
+                column["toDate"] = reader["toDate"].ToString();
+                column["wagePerDay"] = reader["jobLocation"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                column["selected"] = reader["selected"].ToString();
+                list.Add(column);
+            }
+
+            return list;
+        }
+        public bool alreadyApplied(int jsId, int jId)
+        {
+            string sqlstring = "select 1 from appliedJobs where jobId=" + jId + " and jobSeekerId = " + jsId;
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
+            bool flag = sd.Read() ? true : false;
+            return flag;
+        }
+        public object appliedJobSeeker(string id)
+        {
+            string sql = "select j.*, a.selected from job as j join appliedJobs as a on j.jobId = a.jobId where a.jobSeekerId = " + id;
+            return executeAppliedJobSeeker(sql, id);
+        }
+
+        /*public string deleteAppliedJobs(string id)
+        {
+            try
+            {
+                string sql = "delete from appliedJobs where jobId=" + id;
+                Execute(sql);
+                return "Applied job deleted";
+            }
+            catch (Exception ex)
+            {
+                return "Bad Reuest";
+            }
+        }*/
+
+
+        public bool acceptJobSeeker(int id, int jobId)
+        {
+            try
+            {
+                string sql = "update appliedJobs set selected = '1' where jobSeekerId=" + id + " and jobId = " + jobId;
+                Execute(sql);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public bool rejectJobSeeker(int id, int jobId)
+        {
+            try
+            {
+                string sql = "update appliedJobs set selected = '2' where jobSeekerId=" + id + " and jobId = " + jobId;
+                Execute(sql);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public object searchLocation(string loc)
+        {
+            string sql = "SELECT job.*, ch_user.mobileNumber FROM job inner join ch_user on job.jobProviderId = ch_user.id where job.jobLocation LIKE '" + loc + "%'; ";
+            return executeGetJobs(sql);
+        }
+
+        public object getJobSeekerById(int id)
+        {
+            string sql = "select * from jobSeeker where id = " + id;
+            return executeGetJobSeekerById(sql);
+        }
+
+        public string checkCandidates(int jsId, int jId)
+        {
+            string sql = "select selected from appliedJobs where jobId = '" + jId + "' and jobSeekerId = '" + jsId + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            var res = cmd.ExecuteScalar();
+            string result = "";
+            if (res != null)
+            {
+                result = res.ToString();
+            }
+            sqlcon.Close();
+            return result;
+        }
+
+        //JobController
+
+        public string addJob(JobModel job, string id)
+        {
+            try
+            {
+                string sql = "insert into job(jobDescription, jobLocation, fromDate, toDate, wagePerDay, jobProviderId, mobileNumber) values('" + job.jobDescription + "', '" + job.jobLocation + "', '" + job.fromDate + "', '" + job.toDate + "', '" + job.wagePerDay + "', '" + id + "','" + job.mobileNumber + "')";
+                string sql1 = "update ch_user set mobileNumber = '" + job.mobileNumber + "' where id=" + id;
+                Execute(sql1);
+                Execute(sql);
+                return "Job added successful";
+            }
+            catch (Exception ex)
+            {
+                return "Error occured..!";
+            }
+        }
+        public object executeGetJobs(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["jobId"] = reader["jobId"].ToString();
+                column["jobDescription"] = reader["jobDescription"].ToString();
+                column["jobLocation"] = reader["jobLocation"].ToString();
+                column["fromDate"] = reader["fromDate"].ToString();
+                column["toDate"] = reader["toDate"].ToString();
+                column["wagePerDay"] = reader["wagePerDay"].ToString();
+                column["phone"] = reader["mobileNumber"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object getJobs()
+        {
+            string sql = "select * from job";
+            return executeGetJobs(sql);
+
+        }
+        public object getCandidatesApplied(int jobProviderid, int jobId)
+        {
+            string sql = "select id, name, address, experience, phone, email, jobId from jobSeeker inner join appliedJobs on jobSeeker.id = appliedJobs.jobSeekerId where jobProviderId = " + jobProviderid + " and appliedJobs.jobId = " + jobId;
+
+            return executeCandidates(sql);
+        }
+        public object executeGetcustomerJobs(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["jobId"] = reader["jobId"].ToString();
+                column["jobDescription"] = reader["jobDescription"].ToString();
+                column["jobLocation"] = reader["jobLocation"].ToString();
+                column["fromDate"] = reader["fromDate"].ToString();
+                column["toDate"] = reader["toDate"].ToString();
+                column["wagePerDay"] = reader["wagePerDay"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object getcustomerJobs(string id)
+        {
+            string sql = "select * from job where jobProviderId = " + id;
+            return executeGetcustomerJobs(sql);
+        }
+        public string editJob(string id, JobModel job)
+        {
+            try
+            {
+                string sql = "update job set jobDescription='" + job.jobDescription + "', jobLocation='" + job.jobLocation + "', fromDate='" + job.fromDate + "', toDate='" + job.toDate + "', wagePerDay='" + job.wagePerDay + "', mobileNumber = '" + job.mobileNumber + "' where jobId=" + id;
+                Execute(sql);
+                return "Job updated";
+            }
+            catch (Exception ex)
+            {
+                return "Bad Request";
+            }
+        }
+        public string deleteJob(string id)
+        {
+            try
+            {
+                string sql1 = "delete from job where jobId=" + id;
+                string sql2 = "update appliedJobs set selected = '3' where jobId = " + id;
+                Execute(sql1);
+                Execute(sql2);
+                return "Job Deleted";
+            }
+            catch (Exception ex)
+            {
+                return "Bad Request";
+            }
+
+        }
+
+        public object executeCandidates(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["id"] = reader["id"].ToString();
+                column["name"] = reader["name"].ToString();
+                column["address"] = reader["address"].ToString();
+                column["phone"] = reader["phone"].ToString();
+                column["email"] = reader["email"].ToString();
+                column["experience"] = reader["experience"].ToString();
+                column["jobId"] = reader["jobId"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object candidates()
+        {
+            string sql = "select id, name, address, experience, phone, email, jobId from jobSeeker as j left join appliedJobs as a on j.id = a.jobSeekerId;";
+            return executeCandidates(sql);
+        }
+
+        //AdminController
+
+        public string addProfile(AdminModel data)
+        {
+            try
+            {
+                string sql = "insert into admin(username, email, password, mobileNumber) values('" + data.username + "', '" + data.email + "', '" + data.password + "', '" + data.mobileNumber + "')";
+                Execute(sql);
+                return "Profile added";
+            }
+            catch (Exception e)
+            {
+                return "Bad Request";
+            }
+        }
+        public string editUserDetails(UserModel user, int id)
+        {
+            try
+            {
+                string sql = "update ch_user set userrole = '" + user.userrole + "', username = '" + user.username + "', email = '" + user.email + "', mobileNumber = '" + user.mobileNumber + "' where id = " + id;
+                Execute(sql);
+                return "Profile Updated";
+            }
+            catch (Exception e)
+            {
+                return "Bad Request";
+            }
+        }
+        public string deleteCandidates(int id)
+        {
+            try
+            {
+                string sql = "delete from appliedJobs where jobSeekerId=" + id;
+                Execute(sql);
+                return "Candidate deleted";
+            }
+            catch (Exception e)
+            {
+                return "Bad Request";
+            }
+        }
+        /*public string deleteProfile(string id)
+        {
+            try
+            {
+                string sql = "delete from admin where id=" + id;
+                return "Profile deleted";
+            }
+            catch( Exception e)
+            {
+                return "Bad Request";
+            }
+        }*/
+        public string editProfile(string id, AdminModel data)
+        {
+            try
+            {
+                string sql = "update admin set username='" + data.username + "', email='" + data.email + "', password='" + data.password + "', mobileNumber='" + data.mobileNumber + "'";
+                Execute(sql);
+                return "Profile updated";
+            }
+            catch (Exception e)
+            {
+                return "Bad Request";
+            }
+        }
+        public object executeViewProfile(string sql)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sql, sqlcon);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            Dictionary<string, string> column;
+            while (reader.Read())
+            {
+                column = new Dictionary<string, string>();
+                column["id"] = reader["id"].ToString();
+                column["username"] = reader["username"].ToString();
+                column["email"] = reader["email"].ToString();
+                column["password"] = reader["password"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                list.Add(column);
+            }
+            sqlcon.Close();
+            return list;
+        }
+        public object viewProfile()
+        {
+            string sql = "Select * from admin";
+            return executeViewProfile(sql);
+
+        }
+    }
+}
