@@ -354,9 +354,18 @@ namespace DatabaseController
             sqlcon.Close();
             return result;
         }
-        public bool addReview(int id)
+        public bool addReview(ReviewModel review)
         {
-            return true;
+            try
+            {
+                string sql = "insert into review values(" + review.userId + ", " + review.rating + ", '" + review.comment + "'";
+                Execute(sql);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
         //JobController
 
