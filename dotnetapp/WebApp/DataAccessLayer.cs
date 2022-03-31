@@ -130,13 +130,9 @@ namespace DatabaseController
             {
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
-                column["username"] = reader["username"].ToString();
-                column["name"] = reader["name"].ToString();
+                column["name"] = reader["username"].ToString();
                 column["email"] = reader["email"].ToString();
-                column["password"] = reader["password"].ToString();
                 column["mobileNumber"] = reader["mobileNumber"].ToString();
-                column["experience"] = reader["experience"].ToString();
-                column["address"] = reader["address"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -154,9 +150,11 @@ namespace DatabaseController
             {
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
-                column["name"] = reader["username"].ToString();
+                column["name"] = reader["name"].ToString();
                 column["email"] = reader["email"].ToString();
-                column["mobileNumber"] = reader["mobileNumber"].ToString();
+                column["phone"] = reader["phone"].ToString();
+                column["experience"] = reader["experience"].ToString();
+                column["address"] = reader["address"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -164,7 +162,7 @@ namespace DatabaseController
         }
         public object getJobSeeker()
         {
-            string sql = "select * from ch_user where userrole='Job Seeker'";
+            string sql = "select * from ch_user where userrole='Job Provider'";
             return executeGetJobSeeker(sql);
 
         }
