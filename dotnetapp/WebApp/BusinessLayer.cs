@@ -141,5 +141,23 @@ namespace DatabaseController
         {
             return dal.viewProfile();
         }
+
+        //Report
+        public int totalUsers()
+        {
+            return dal.totalUsers();
+        }
+        public int totalJobSeekers()
+        {
+            return dal.totalJobSeekers();
+        }
+        public int totalJobProviders()
+        {
+            return dal.totalJobProviders();
+        }
+        public int totalJobsByLocation(string location)
+        {
+            return dal.totalJobsByLocation(location);
+        }
     }
 }
