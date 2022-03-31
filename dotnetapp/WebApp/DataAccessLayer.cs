@@ -72,19 +72,23 @@ namespace DatabaseController
         public bool isAdminPresent(LoginModel login)
         {
             string sqlstring1 = "select 1 from admin where email='" + login.email + "' and password='" + login.password + "'";
-            string sqlstring2 = "select 1 from admin where email='" + login.email + "'";
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
-            SqlCommand cmd1 = new SqlCommand(sqlstring1, sqlcon);
-            SqlCommand cmd2 = new SqlCommand(sqlstring2, sqlcon);
-            SqlDataReader sd = cmd1.ExecuteReader();
+            SqlCommand cmd = new SqlCommand(sqlstring1, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
             bool flag = sd.Read() ? true : false;
-            sd.Close();
-            sd = cmd2.ExecuteReader();
-            bool signup = sd.Read() ? true : false;
-            sd.Close();
             sqlcon.Close();
-            return flag && signup;
+            return flag ;
+        }
+        public bool isAdminPres(string email)
+        {
+            string sqlstring = "select 1 from admin where email='" + email + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
+            bool flag = sd.Read() ? true : false;   
+            return flag;
         }
         public int getUserId(string sqlstring)
         {
@@ -350,7 +354,10 @@ namespace DatabaseController
             sqlcon.Close();
             return result;
         }
-
+        public bool addReview(int id)
+        {
+            return true;
+        }
         //JobController
 
         public string addJob(JobModel job, string id)
@@ -614,6 +621,14 @@ namespace DatabaseController
                 jobSeekerCount = jobSeekerCount
             };
             return obj;
+        }
+        public float avgRating()
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand("select avg(rating) from review", sqlcon);
+            float count = int.Parse(cmd.ExecuteScalar().ToString());
+            return count;
         }
     }
 }
