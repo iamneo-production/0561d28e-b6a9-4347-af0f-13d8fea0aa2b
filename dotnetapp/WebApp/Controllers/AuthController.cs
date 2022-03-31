@@ -31,10 +31,7 @@ namespace CookHiring.Controllers
         {
             try
             {
-                LoginModel login = new LoginModel();
-                login.email = user.email;
-                login.password = user.password;
-                if (!(bsl.isUserPres(login.email)))
+                if (!(bsl.isUserPres(user.email)))
                 {
                     bsl.saveUser(user);
                     return "true";
@@ -51,24 +48,23 @@ namespace CookHiring.Controllers
         }
         [Route("admin/signup")]
         [HttpPost]
-        public bool saveAdmin([FromBody] AdminModel admin)
+        public string saveAdmin([FromBody] AdminModel admin)
         {
             try
             {
-                bool flag = false;
-                LoginModel login = new LoginModel();
-                login.email = admin.email;
-                login.password = admin.password;
-                if (!(isAdminPresent(login)))
+                if (!(bsl.isAdminPres(admin.email)))
                 {
                     bsl.saveAdmin(admin);
-                    flag = true;
+                    return "true";
                 }
-                return flag;
+                else
+                {
+                    return "Email already exists..!";
+                }
             }
             catch (Exception ex)
             {
-                return false;
+                return "Error Occured..!";
             }
         }
     }
