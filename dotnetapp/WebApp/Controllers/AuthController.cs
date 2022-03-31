@@ -49,7 +49,7 @@ namespace CookHiring.Controllers
                 return "Error Occured..!";
             }
         }
-        [Route("admin/singup")]
+        [Route("admin/signup")]
         [HttpPost]
         public bool saveAdmin([FromBody] AdminModel admin)
         {
