@@ -1,8 +1,7 @@
 import { Link, Route ,Routes} from 'react-router-dom';
 import ContentContainer from '../../UI/ContentContainer';
-import  "./Users.module.css";
 import JobSeekersTable from './JobSeekersTable';
-import JobProviderTable from './jobProviderTable';
+import JobProviderTable from './JobProviderTable';
 import AddNewUser from './AddNewUser';
 import EditUser from './EditUser';
 const Users=(props)=>{

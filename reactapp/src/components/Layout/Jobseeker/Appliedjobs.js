@@ -3,7 +3,6 @@ import { Container, Row, Col,Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import classes from "./Appliedjobs.module.css"
 import Card from "../../UI/Card";
-import Phone from "../../../asserts/PhoneIcon";
 
 export default function Appliedjobs(props) {
   const navigate=useNavigate();
