@@ -154,11 +154,9 @@ namespace DatabaseController
             {
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
-                column["name"] = reader["name"].ToString();
+                column["name"] = reader["username"].ToString();
                 column["email"] = reader["email"].ToString();
-                column["phone"] = reader["phone"].ToString();
-                column["experience"] = reader["experience"].ToString();
-                column["address"] = reader["address"].ToString();
+                column["mobileNumber"] = reader["mobileNumber"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -166,7 +164,7 @@ namespace DatabaseController
         }
         public object getJobSeeker()
         {
-            string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
+            string sql = "select * from ch_user where userrole='Job Seeker'";
             return executeGetJobSeeker(sql);
 
         }
@@ -184,7 +182,6 @@ namespace DatabaseController
                 column["id"] = reader["id"].ToString();
                 column["name"] = reader["username"].ToString();
                 column["email"] = reader["email"].ToString();
-                column["password"] = reader["password"].ToString();
                 column["mobileNumber"] = reader["mobileNumber"].ToString();
                 list.Add(column);
             }
@@ -514,7 +511,7 @@ namespace DatabaseController
         {
             try
             {
-                string sql = "update ch_user set userrole = '" + user.userrole + "', username = '" + user.username + "', email = '" + user.email + "', mobileNumber = '" + user.mobileNumber + "' where id = " + id;
+                string sql = "update ch_user set userrole = '" + user.userrole + "', username = '" + user.username + "', email = '" + user.email + "', mobileNumber = '" + user.mobileNumber + "' where id = '" + id + "'";
                 Execute(sql);
                 return "Profile Updated";
             }
