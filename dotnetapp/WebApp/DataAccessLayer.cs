@@ -571,5 +571,42 @@ namespace DatabaseController
             return executeViewProfile(sql);
 
         }
+
+        //Report
+        public int totalUsers()
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand("select count(id) from ch_user", sqlcon);
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            return count;
+
+        }
+        public int totalJobSeekers()
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand("select count(id) from ch_user where userrole = 'Job Seeker'", sqlcon);
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            return count;
+
+        }
+        public int totalJobProviders()
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand("select count(id) from ch_user where userrole = 'Job Provider'", sqlcon);
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            return count;
+
+        }
+        public int totalJobsByLocation(string location)
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand("select count(jobId) from job where jobLocation like '" + location + "%'", sqlcon);
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            return count;
+        }
     }
 }
