@@ -600,13 +600,20 @@ namespace DatabaseController
             return count;
 
         }
-        public int totalJobsByLocation(string location)
+        public object totalJobsByLocation(string location)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
             SqlCommand cmd = new SqlCommand("select count(jobId) from job where jobLocation like '" + location + "%'", sqlcon);
-            int count = int.Parse(cmd.ExecuteScalar().ToString());
-            return count;
+            int jobCount = int.Parse(cmd.ExecuteScalar().ToString());
+            cmd = new SqlCommand("select count(a.jobProviderId) from appliedJobs as a inner join job as j on j.jobId = a.jobId where jobLocation like '" + location + "%'", sqlcon);
+            int jobSeekerCount = int.Parse(cmd.ExecuteScalar().ToString());
+            var obj = new
+            {
+                jobCount = jobCount,
+                jobSeekerCount = jobSeekerCount
+            };
+            return obj;
         }
     }
 }
