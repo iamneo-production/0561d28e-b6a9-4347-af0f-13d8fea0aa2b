@@ -14,13 +14,13 @@ namespace CookHiring.Controllers
         private BusinessLayer bsl = new BusinessLayer();
         [Route("admin/addJob/{id}")]
         [HttpPost]
-        public string addJob([FromBody]JobModel job, [FromHeader]string id)
+        public string addJob([FromBody]JobModel job, string id)
         {
             return bsl.addJob(job, id);
         }
         [Route("admin/editJob/{id}")]
         [HttpPut]
-        public string editJob([FromHeader] string id, [FromBody]JobModel job)
+        public string editJob(string id, [FromBody]JobModel job)
         {
             return bsl.editJob(id, job);
 
@@ -42,7 +42,7 @@ namespace CookHiring.Controllers
         }
         [Route("admin/deleteJob/{jobId}")]
         [HttpPost]
-        public string deleteJob(String jobId)
+        public string deleteJob(string jobId)
         {
             return bsl.deleteJob(jobId);
         }
