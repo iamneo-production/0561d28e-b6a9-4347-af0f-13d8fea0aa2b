@@ -589,55 +589,60 @@ namespace DatabaseController
         }
 
         //Report
-        public int totalUsers()
+        public object totalUsers(string location)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
+            //Total Users
             SqlCommand cmd = new SqlCommand("select count(id) from ch_user", sqlcon);
-            int count = int.Parse(cmd.ExecuteScalar().ToString());
-            return count;
-
-        }
-        public int totalJobSeekers()
-        {
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand("select count(id) from ch_user where userrole = 'Job Seeker'", sqlcon);
-            int count = int.Parse(cmd.ExecuteScalar().ToString());
-            return count;
-
-        }
-        public int totalJobProviders()
-        {
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand("select count(id) from ch_user where userrole = 'Job Provider'", sqlcon);
-            int count = int.Parse(cmd.ExecuteScalar().ToString());
-            return count;
-
-        }
-        public object totalJobsByLocation(string location)
-        {
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand("select count(jobId) from job where jobLocation like '" + location + "%'", sqlcon);
-            int jobCount = int.Parse(cmd.ExecuteScalar().ToString());
-            cmd = new SqlCommand("select count(a.jobProviderId) from appliedJobs as a inner join job as j on j.jobId = a.jobId where jobLocation like '" + location + "%'", sqlcon);
+            int total = int.Parse(cmd.ExecuteScalar().ToString());
+            //Job Seeker
+            string qry1 = "", qry2 = "";
+            if (location == null)
+            {
+                qry1 = "Select count(id) from ch_user where userrole = 'Job Seeker'";
+            }
+            else
+            {
+                qry1 = "select count(id) from jobSeeker where address like '" + location + "%'";
+            }
+            cmd = new SqlCommand(qry1, sqlcon);
             int jobSeekerCount = int.Parse(cmd.ExecuteScalar().ToString());
+            //Job Provider
+            if (location == null)
+            {
+                qry2 = "select count(id) from ch_user where userrole = 'Job Provider'";
+            }
+            else
+            {
+                qry2 = "select count(distinct(j.jobProviderId)) from ch_user as c join job as j on j.jobProviderId = c.id where j.jobLocation like '" + location + "%'";
+            }
+            cmd = new SqlCommand(qry2, sqlcon);
+            int jobProviderCount = int.Parse(cmd.ExecuteScalar().ToString());
+            DateTime today = DateTime.Today;
+           // active Jobs
+            cmd = new SqlCommand("select count(jobProviderId) from job where toDate >= '" + today.ToString("yyyy-MM-dd") + "' and jobLocation like '" + location + "%'", sqlcon);
+            int activeJobs = int.Parse(cmd.ExecuteScalar().ToString());
+            //total jobs
+            cmd = new SqlCommand("select count(jobId) from job", sqlcon);
+            int totalJobs = int.Parse(cmd.ExecuteScalar().ToString());
+            //Available jobs
+            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 0 and j.jobLocation like '" + location + "%' and j.toDate >= '" + today.ToString("yyyy-MM-dd") + "'", sqlcon);
+            int waiting = int.Parse(cmd.ExecuteScalar().ToString());
+            //Accepted Jobs
+            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 1 and j.jobLocation like '" + location + "%'", sqlcon);
+            int accepted = int.Parse(cmd.ExecuteScalar().ToString());
             var obj = new
             {
-                jobCount = jobCount,
-                jobSeekerCount = jobSeekerCount
+                total = total,
+                jobSeeker = jobSeekerCount,
+                jobProvider = jobProviderCount,
+                totalJobs = totalJobs,
+                activeJobs = activeJobs,
+                waiting = waiting,
+                accepted = accepted
             };
             return obj;
-        }
-        public float avgRating()
-        {
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand("select avg(rating) from review", sqlcon);
-            float count = int.Parse(cmd.ExecuteScalar().ToString());
-            return count;
         }
     }
 }
