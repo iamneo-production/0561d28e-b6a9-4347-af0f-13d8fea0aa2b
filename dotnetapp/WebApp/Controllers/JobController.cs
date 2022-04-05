@@ -20,7 +20,11 @@ namespace CookHiring.Controllers
         }
         [Route("admin/editJob/{id}")]
         [HttpPut]
+<<<<<<< HEAD
         public string editJob( string id, [FromBody]JobModel job)
+=======
+        public string editJob(string id, [FromBody]JobModel job)
+>>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
         {
             return bsl.editJob(id, job);
 
@@ -42,7 +46,7 @@ namespace CookHiring.Controllers
         }
         [Route("admin/deleteJob/{jobId}")]
         [HttpPost]
-        public string deleteJob(String jobId)
+        public string deleteJob(string jobId)
         {
             return bsl.deleteJob(jobId);
         }

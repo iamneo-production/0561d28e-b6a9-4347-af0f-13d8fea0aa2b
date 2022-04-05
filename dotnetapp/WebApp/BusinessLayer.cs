@@ -22,6 +22,10 @@ namespace DatabaseController
         {
             return dal.isUserPres(email);
         }
+        public bool isAdminPres(string email)
+        {
+            return dal.isAdminPres(email);
+        }
         public bool isAdminPresent(LoginModel login)
         {
             return dal.isAdminPresent(login);
@@ -99,6 +103,11 @@ namespace DatabaseController
         {
             return dal.checkCandidates(jsId, jId);
         }
+
+        public bool addReview(ReviewModel review)
+        {
+            return dal.addReview(review);
+        }
         //JobController
         public string addJob(JobModel job, string id)
         {
@@ -146,6 +155,28 @@ namespace DatabaseController
         public object viewProfile()
         {
             return dal.viewProfile();
+        }
+
+        //Report
+        public int totalUsers()
+        {
+            return dal.totalUsers();
+        }
+        public int totalJobSeekers()
+        {
+            return dal.totalJobSeekers();
+        }
+        public int totalJobProviders()
+        {
+            return dal.totalJobProviders();
+        }
+        public object totalJobsByLocation(string location)
+        {
+            return dal.totalJobsByLocation(location);
+        }
+        public float avgRating()
+        {
+            return dal.avgRating();
         }
     }
 }

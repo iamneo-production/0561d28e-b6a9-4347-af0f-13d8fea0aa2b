@@ -27,6 +27,7 @@ namespace CookHiring.Controllers
         }
         [Route("user/signup")]
         [HttpPost]
+<<<<<<< HEAD
        public string saveUser([FromBody]UserModel user)
         {
             try
@@ -34,6 +35,12 @@ namespace CookHiring.Controllers
                 // LoginModel login = new LoginModel();
                 // login.email = user.email;
                 // login.password = user.password;
+=======
+        public string saveUser([FromBody]UserModel user)
+        {
+            try
+            {
+>>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
                 if (!(bsl.isUserPres(user.email)))
                 {
                     bsl.saveUser(user);
@@ -51,7 +58,11 @@ namespace CookHiring.Controllers
         }
         [Route("admin/signup")]
         [HttpPost]
+<<<<<<< HEAD
        public string saveAdmin([FromBody] AdminModel admin)
+=======
+        public string saveAdmin([FromBody] AdminModel admin)
+>>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
         {
             try
             {

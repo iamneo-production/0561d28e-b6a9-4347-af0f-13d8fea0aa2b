@@ -102,5 +102,11 @@ namespace CookHiring.Controllers
         {
             return bsl.checkCandidates(jsId, jId);
         }
+        [Route("user/addReview")]
+        [HttpPost]
+        public bool addReview([FromBody]ReviewModel review)
+        {
+            return bsl.addReview(review);
+        }
     }
 }
