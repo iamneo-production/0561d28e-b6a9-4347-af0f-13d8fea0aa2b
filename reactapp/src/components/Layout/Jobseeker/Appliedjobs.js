@@ -44,7 +44,7 @@ export default function Appliedjobs(props) {
                   <td>Job Location :</td>
                   <td>{props.job_location}</td>
                 </tr>
-            cd  </tbody>
+              </tbody>
             </table>
           </Col>
           <Col  >
@@ -59,7 +59,7 @@ export default function Appliedjobs(props) {
                   <td>{props.to_date}</td>
                 </tr>
                 <tr>
-                  <td>{Phone}</td>
+                  <td>phone :</td>
                   <td>{props.phone_number}</td>
                 </tr>
               </tbody>

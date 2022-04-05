@@ -41,7 +41,7 @@ function Openings(props) {
                 </tr>
                 <tr>
                   <td>From Date :</td>
-                  <td>{props.from_date}</td>
+                  <td>{props.from_date.split(' ')[0]}</td>
                 </tr>
                 <tr>
                   <td>Job Location :</td>
@@ -59,7 +59,7 @@ function Openings(props) {
                 </tr>
                 <tr>
                   <td>To Date :</td>
-                  <td>{props.to_date}</td>
+                  <td>{props.to_date.split(' ')[0]}</td>
                 </tr>
                 <tr>
                   <td>Phone Number :</td>
@@ -71,7 +71,7 @@ function Openings(props) {
         </Row>
         <div className="w-100 border  bg-secondary border-1 mt-2"></div>
         <Row className="text-center">
-          <Col>available</Col>
+         
           <Col>
             {" "}
             <Button className="m-1" onClick={onEdit}>

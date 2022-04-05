@@ -8,21 +8,22 @@ import LoginContext from "../../store/LoginContext";
 const Profile = (props) => {
   const navigate=useNavigate();
   const Context=useContext(LoginContext)
-  console.log(Context.userData);
   const Logout=()=>{
     Context.isAuthendicated=false;
-    navigate("/user/login");
+    localStorage.clear();
+    navigate("/login");
   }
   return (
     <Row>
       <Dropdown>
         <Dropdown.Toggle  id="dropdown-basic">
          
-        {PersonIcon}{localStorage.getItem('uname')}
+        {PersonIcon}&nbsp;{localStorage.getItem('uname')}
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
           <Dropdown.Item onClick={Logout}>Logout</Dropdown.Item>
+          {localStorage.getItem('uname')!=="Admin" &&<Dropdown.Item onClick={()=>navigate('/review')}>Review</Dropdown.Item>}
         </Dropdown.Menu>
       </Dropdown>
     </Row>

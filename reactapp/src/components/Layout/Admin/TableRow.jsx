@@ -7,7 +7,8 @@ const TableRow = (props) => {
     const Context = useContext(AdminContext);
     const Navigate = useNavigate();
     const onEditUser = () => {
-        Context.userEditdata = props.item;
+        Context.userEditdata = {...props.item,name:props.name};
+        console.log(props.item);
         Navigate(`/admin/editUser/${props.id}`);
     }
     const OnDelete = (id) => {

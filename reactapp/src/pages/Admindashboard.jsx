@@ -7,6 +7,7 @@ import Adminnavigation from '../components/Layout/Admin/Adminnavigation';
 import AdminOpenings from '../components/Layout/Admin/AdminOpenings';
 import EditUser from '../components/Layout/Admin/EditUser';
 import Users from '../components/Layout/Admin/Users';
+//import Report from '../components/Layout/Report/Report'
 import AdminContextProvider from '../store/Admin/AdminContextProvider';
 function Admindashboard(props) {
   return(
@@ -19,6 +20,7 @@ function Admindashboard(props) {
       <Route path='editjob/:id' element={<Admineditopenings/>}/>
       <Route path='editUser/:id' element={<EditUser/>}/>
       <Route path='Users/*' element={<Users/>}/>
+      {/* <Route path='Reports' element={<Report/>}/>  */}
       </Routes>
     </AdminContextProvider>
    );

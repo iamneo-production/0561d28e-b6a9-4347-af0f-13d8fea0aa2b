@@ -3,31 +3,30 @@ import axios from "axios";
 import AdminContext from "./AdminContext";
 import { PostUserData } from '../../Server/PostUserData';
 import { Variable } from "../../Variable";
-
-
 const AdminContextProvider = (props) => {
   let [Candidates, setCandidates] = useState([]);
   let [Jobproviders, setJobproviders] = useState([]);
   let [Jobseekers, setJobseeker] = useState([]);
   const [Openings, setOpenings] = useState([]);
+  
   const GetCandidates = () => {
     useEffect(() => {
       axios
-        .get('https://localhost:44375/admin/getCandidates')
+        .get(Variable.API_URL+'admin/getCandidates')
         .then(res => {
           //
           setCandidates(res.data);
-
+          console.log(res.data)
         })
         .catch(err => {
           console.log(err)
         })
-    }, []);
+    },[]);
   }
   const useGetJobs = () => {
     useEffect(() => {
       axios
-        .get('https://localhost:44375/admin/getAllJobs')
+        .get(Variable.API_URL+'admin/getAllJobs')
         .then(res => {
           //
           setOpenings(res.data)
@@ -41,12 +40,11 @@ const AdminContextProvider = (props) => {
   const useGetJobProviders = () => {
     useEffect(() => {
       axios
-      .get('https://localhost:44375/admin/getJobProvider')
+      .get(Variable.API_URL+'admin/getJobProvider')
         .then(res => {
           //
           setJobproviders(res.data)
-          //console.log(res.data)
-
+         
         })
         .catch(err => {
           console.log(err)
@@ -56,7 +54,7 @@ const AdminContextProvider = (props) => {
   const useGetJobSeekers = () => {
     useEffect(() => {
       axios
-        .get('https://localhost:44375/admin/getJobSeeker')
+        .get(Variable.API_URL+'admin/getJobSeeker')
         .then(res => {
           //
           setJobseeker(res.data)
@@ -67,18 +65,17 @@ const AdminContextProvider = (props) => {
         })
     }, []);
   }
-  const CandidateDeleteHandler = (id) => {
-    let res;
-    fetch(Variable.API_URL + 'admin/deleteCandidate/' + id,{
-        method: 'POST',
-        headers: {
-          'Accept':'application/json',
-          'Content-type': 'application/json'
-        },
-      }).then(res => res.json()).then((data)=>{   
-        res = data.data;  
-    });
-    alert(res);
+ async function CandidateDeleteHandler (id) {
+    let res= await fetch(Variable.API_URL + 'admin/deleteCandidate/' + id,{
+        method: 'DELETE',
+      })
+      const data=await res.json();
+      alert(data);
+      setCandidates(
+        Candidates.filter((item) => {
+          return item.id !== id;
+        })
+      ); 
   };
   const CandidateEditHandeler = (data) => {
     let res;
@@ -122,7 +119,11 @@ const AdminContextProvider = (props) => {
       }
       const data = await response.json();
       alert(data);  
-      window.location.reload();
+      setOpenings(
+      Openings.filter((item) => {
+          return item.id !== id;
+        })
+      );
     } catch (error) {
       alert(error.message);
     }   
@@ -144,8 +145,8 @@ const AdminContextProvider = (props) => {
   };
   async function userEdit(data, id)
   {
-    console.log(data)
-    let res = await fetch('https://localhost:44375/admin/editUser/' + id,{
+  console.log(id,data);
+    let res = await fetch(Variable.API_URL+'admin/editUser/' + id,{
         method: 'PUT',
         headers: {
           'Accept':'application/json',
@@ -158,7 +159,7 @@ const AdminContextProvider = (props) => {
   }
   async function deleteUser( id)
   {
-    let res = await fetch('https://localhost:44375/admin/deleteUser/' + id,{
+    let res = await fetch(Variable.API_URL+'admin/deleteUser/' + id,{
         method: 'POST',
         headers: {
           'Accept':'application/json',
@@ -171,6 +172,7 @@ const AdminContextProvider = (props) => {
   }
   const UserEditHander = (data, id) => {
     userEdit(data, id);
+    console.log(id);
   }
   const DeleteUserData=(id)=>{
     deleteUser(id);

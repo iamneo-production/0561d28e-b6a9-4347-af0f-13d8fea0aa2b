@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
 import Admindashboard from "./pages/Admindashboard";
 import Auth from "./pages/Auth";
 import Jobseekerdashboard from "./pages/Jobseekerdashboard";
 import Customerdashboard from "./pages/Customerdashboard";
 import Login from "./pages/Login";
 import React from 'react'
+import Review from "./pages/Review";
 
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
           <Route path="/jobseeker/*" element={<Jobseekerdashboard />} />
           <Route path="/admin/*" element={<Admindashboard />} />
           <Route path="/jobprovider/*" element={<Customerdashboard />} />
+          <Route path='/review' element={<Review/>}/>
         </Routes>
       </main>
     </div>

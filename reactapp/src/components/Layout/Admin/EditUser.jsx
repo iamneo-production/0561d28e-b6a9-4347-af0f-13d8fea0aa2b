@@ -18,7 +18,7 @@ const EditUser = () => {
   const Username = useRef();
   const Phone_num = useRef();
   let { id } = useParams();
-  let formData = Context.userEditdata ;
+  let formData ={...Context.userEditdata} ;
   var errors = [
     "Please fill all the input feilds",
     "Password should contain 6 characters, atleast one number and one special character",
@@ -77,7 +77,7 @@ const EditUser = () => {
           <h3>Edit User</h3>
             <Form.Group className="mb-2">
               <Form.Label>Enter Jobprovider/Jobseeker</Form.Label>
-              <Form.Control ref={User} as="select" id="jobProvider/jobSeeker">
+              <Form.Control ref={User} as="select" defaultValue={formData.userRole} id="jobProvider/jobSeeker">
                 <option value="Job Provider">Job Provider</option>
                 <option value="Job Seeker">Job Seeker</option>
               </Form.Control>

@@ -3,27 +3,31 @@ import { Row, Col, Form, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminContext from "../../../store/Admin/AdminContext";
 import ContentContainer from "../../UI/ContentContainer";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 function Admineditopenings() {
   const [isError, setIsError] = useState(false);
+
   const Context = useContext(AdminContext);
   const navigate = useNavigate();
   const JobDiscription = useRef();
-  const FromDate = useRef();
   const WageForDay = useRef();
-  const ToDate = useRef();
   const PhoneNumber = useRef();
   const JobLocation = useRef();
   const { id } = useParams();
   let form_data = Context.openingEditData;
+  const [fromDate, setStartDate] = useState(new Date(form_data.from_date.split(' ')[0]));
+  const [toDate, setStartToDate] = useState(new Date(form_data.to_date.split(' ')[0]));
+
   const onUpdate = (event) => {
-    console.log(form_data)
+
     event.preventDefault();
     if (
       !(
-        FromDate.current.value &&
-        ToDate.current.value &&
+        fromDate &&
+        toDate&&
         JobDiscription.current.value &&
         JobLocation.current.value &&
         PhoneNumber.current.value &&
@@ -33,8 +37,8 @@ function Admineditopenings() {
       setIsError(true);
       return;
     }
-    form_data.from_date = FromDate.current.value;
-    form_data.to_date = ToDate.current.value;
+    form_data.from_date = fromDate;
+    form_data.to_date = toDate;
     form_data.job_discription = JobDiscription.current.value;
     form_data.job_location = JobLocation.current.value;
     form_data.phone_number = PhoneNumber.current.value;
@@ -42,21 +46,21 @@ function Admineditopenings() {
     const data = {
       jobDescription: JobDiscription.current.value,
       jobLocation: JobLocation.current.value,
-      fromDate: FromDate.current.value,
-      toDate: ToDate.current.value,
+      fromDate: fromDate,
+      toDate: toDate,
       wagePerDay: WageForDay.current.value,
       mobileNumber: PhoneNumber.current.value
     };
     console.log(data);
     Context.openingEdit(id, data);
-    
+
     navigate("/admin/getalljobs");
   };
   const onCancel = () => {
     navigate(-1);
   };
   return (
-   <ContentContainer>
+    <ContentContainer>
       <form className="m-4 bg-light p-3 rounded " onSubmit={onUpdate}>
         <Row>
           <h3>Edit Openings</h3>
@@ -73,13 +77,10 @@ function Admineditopenings() {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>From Date</Form.Label>
-              <Form.Control
-                ref={FromDate}
-                id="editFromDate"
-                type="date"
-                placeholder="Enter from date"
-                defaultValue={form_data.from_date}
-              />
+              <DatePicker selected={fromDate}
+                minDate={new Date()}
+
+                onChange={(date) => { setStartDate(date); setStartToDate(date); }} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Wage For Day</Form.Label>
@@ -105,13 +106,10 @@ function Admineditopenings() {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>To Date</Form.Label>
-              <Form.Control
-                ref={ToDate}
-                id="editToDate"
-                type="date"
-                placeholder="Enter from date"
-                defaultValue={form_data.to_date}
-              />
+              <DatePicker selected={toDate}
+                minDate={fromDate}
+
+                onChange={(date) => setStartToDate(date)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Phone Number</Form.Label>
@@ -145,9 +143,9 @@ function Admineditopenings() {
           </Col>
         </Row>
       </form>
-      </ContentContainer>
-     
-      
+    </ContentContainer>
+
+
   );
 }
 

@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using CookHiring.Models;
 
 namespace DatabaseController
 {
     public class DataAccessLayer
     {
-        private string con = "Data Source=LAPTOP-FKFUSU87\\SQLEXPRESS; Initial Catalog=Virtusa; Integrated Security=True";
+        private string con = "Server=0.0.0.0;Data Source=.;User id=sa;Password=examlyMssql@123;Initial Catalog=CookHiring;";
         //Common Methods
         public void Execute(string sqlstring)
         {
@@ -72,21 +74,24 @@ namespace DatabaseController
         public bool isAdminPresent(LoginModel login)
         {
             string sqlstring1 = "select 1 from admin where email='" + login.email + "' and password='" + login.password + "'";
-            string sqlstring2 = "select 1 from admin where email='" + login.email + "'";
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
-            SqlCommand cmd1 = new SqlCommand(sqlstring1, sqlcon);
-            SqlCommand cmd2 = new SqlCommand(sqlstring2, sqlcon);
-            SqlDataReader sd = cmd1.ExecuteReader();
+            SqlCommand cmd = new SqlCommand(sqlstring1, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
             bool flag = sd.Read() ? true : false;
-            sd.Close();
-            sd = cmd2.ExecuteReader();
-            bool signup = sd.Read() ? true : false;
-            sd.Close();
             sqlcon.Close();
-            return flag && signup;
+            return flag ;
         }
-        public int getUserId(string sqlstring)
+        public bool isAdminPres(string email)
+        {
+            string sqlstring = "select 1 from admin where email='" + email + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
+            bool flag = sd.Read() ? true : false;
+            return flag;
+        }        public int getUserId(string sqlstring)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
@@ -99,15 +104,15 @@ namespace DatabaseController
         public void insertJobSeeker(UserModel user)
         {
             string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
-            int id = getUserId(sql);
-            sql = "Insert into jobSeeker(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            // int id = getUserId(sql);
+            // sql = "Insert into jobSeeker(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
             Execute(sql);
         }
         public void insertJobProvider(UserModel user)
         {
             string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
-            int id = getUserId(sql);
-            sql = "Insert into jobProvider(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            // int id = getUserId(sql);
+            // sql = "Insert into jobProvider(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
             Execute(sql);
         }
         public void insertAdmin(AdminModel admin)
@@ -131,12 +136,12 @@ namespace DatabaseController
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
                 column["username"] = reader["username"].ToString();
-                column["name"] = reader["name"].ToString();
+               // column["name"] = reader["name"].ToString();
                 column["email"] = reader["email"].ToString();
                 column["password"] = reader["password"].ToString();
                 column["mobileNumber"] = reader["mobileNumber"].ToString();
-                column["experience"] = reader["experience"].ToString();
-                column["address"] = reader["address"].ToString();
+                // column["experience"] = reader["experience"].ToString();
+                // column["address"] = reader["address"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -166,7 +171,8 @@ namespace DatabaseController
         }
         public object getJobSeeker()
         {
-            string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
+            //string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
+            string sql="select * from ch_user where userrole='Job Seeker'";
             return executeGetJobSeeker(sql);
 
         }
@@ -249,12 +255,33 @@ namespace DatabaseController
                 return "Bad Request";
             }
         }
+           public bool isprofilePres(int id)
+        {
+            string sqlstring = "select 1 from jobSeeker where email='" + id + "'";
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
+            SqlDataReader sd = cmd.ExecuteReader();
+            bool flag = sd.Read() ? true : false;
+            return flag;
+        }
 
-        public string applyJob(string jobSeekerId, string jobId)
+        public string applyJob(JobSeekerModel user, int jobId)
         {
             try
             {
-                string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + jobSeekerId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
+                 string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + user.personId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
+
+                string sql2="insert into jobSeeker(id, name, address,experience,phone,email) values("+user.personId+",'"+user.personName+"','"+user.personAddress+"','"+user.personExp+"','"+user.personPhone+"','"+user.email+"')";
+                string sql3="update jobSeeker set name ='"+user.personName+"',address='"+user.personAddress+"',experience='"+user.personExp+"',phone='"+user.personPhone +"',email='"+user.email+"')";
+               if(isprofilePres(user.personId))
+               {
+                Execute(sql3);
+               }
+               else{
+                   Execute(sql2);
+                   
+               }
                 Execute(sql);
                 return "Job applied";
             }
@@ -483,7 +510,7 @@ namespace DatabaseController
                 column["phone"] = reader["phone"].ToString();
                 column["email"] = reader["email"].ToString();
                 column["experience"] = reader["experience"].ToString();
-                column["jobId"] = reader["jobId"].ToString();
+               // column["jobId"] = reader["jobId"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -491,7 +518,7 @@ namespace DatabaseController
         }
         public object candidates()
         {
-            string sql = "select id, name, address, experience, phone, email, jobId from jobSeeker as j left join appliedJobs as a on j.id = a.jobSeekerId;";
+            string sql = "select * from jobSeeker;";
             return executeCandidates(sql);
         }
 
@@ -523,17 +550,19 @@ namespace DatabaseController
                 return "Bad Request";
             }
         }
-        public string deleteCandidates(int id)
+        public JsonResult deleteCandidates(int id)
         {
             try
             {
+                string sql1 = "delete from jobSeeker where id=" + id;
+                Execute(sql1);
                 string sql = "delete from appliedJobs where jobSeekerId=" + id;
                 Execute(sql);
-                return "Candidate deleted";
+                return  new JsonResult("Candidate deleted") ;
             }
             catch (Exception e)
             {
-                return "Bad Request";
+                return  new JsonResult("Bad Request");
             }
         }
         public string editProfile(string id, AdminModel data)

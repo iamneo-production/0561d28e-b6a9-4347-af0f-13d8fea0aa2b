@@ -6,7 +6,7 @@ import Card from "../../UI/Card";
 const MyJobs = (props) => {
   const Context=useContext(JobProviderContext);
   function getCandidates(id) {
-    Context.jobId = id;
+   
     localStorage.setItem('jobId', id);
     props.setisgetcandidates(id);
      Context.getCandidates(id);
@@ -16,6 +16,7 @@ const MyJobs = (props) => {
   const getmyjobs=Context.getMyJobs;
   useEffect(() => {
    getmyjobs(localStorage.getItem('id'))
+  
   }, [getmyjobs])
   
   return (
@@ -25,8 +26,8 @@ const MyJobs = (props) => {
       {Context.myJobs.map((item)=>(<button key={item.jobId} className="btn btn-primary text-white p-2 m-1" style={{borderRadius: '20px'}} onClick={getCandidates.bind(this,[item.jobId])}>
         <div className="text-center" style={{paddingBottom: '10px'}}>Job Description : {item.jobDescription}</div>
         <Row>
-          <Col>From : {item.fromDate.split('T')[0]} </Col>
-          <Col>To : {item.toDate.split('T')[0]}</Col>
+          <Col>From : {item.fromDate.split(' ')[0]} </Col>
+          <Col>To : {item.toDate.split(' ')[0]}</Col>
         </Row>
         <div className="border border-0"></div>
       </button>))}

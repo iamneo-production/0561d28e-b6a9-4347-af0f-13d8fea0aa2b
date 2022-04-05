@@ -2,6 +2,7 @@ import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginContext from "../store/LoginContext";
+import { Variable} from "../Variable";
 
 function Login() {
   const [isError, setisError] = useState(false);
@@ -37,11 +38,10 @@ function Login() {
   }
   function postLogin(data) {
     let admin,
-      user,
-      a = 0;
+      user;
     IsAdmin(data);
     async function IsAdmin(data) {
-      admin = await fetch("https://localhost:44375/admin/login", {
+      admin = await fetch(Variable.API_URL + "admin/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,13 +51,14 @@ function Login() {
       });
       admin = await admin.json();
       if (admin) {
-        a++;
+        localStorage.setItem("uname", "Admin");
         Navigate("/admin/dashboard");
+
         context.login(admin);
       } else {
         IsUser(data);
         async function IsUser(data) {
-          user = await fetch("https://localhost:44375/user/login", {
+          user = await fetch(Variable.API_URL + "user/login", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -65,18 +66,23 @@ function Login() {
             },
             body: JSON.stringify(data),
           });
-          user = await user.json();
-          localStorage.setItem("id", user[0]);
-          localStorage.setItem("uname", user[2]);
-          if (user[1] === "Job Seeker") {
-            Navigate("/Jobseeker/dashboard");
-            context.login(user);
-          } else if (user[1] === "Job Provider") {
-            Navigate("/Jobprovider/dashboard");
-            context.login(user);
-          } else if (user[1] == null) {
+          user = await user.json(); 
+          if (user === -1) {
             alert("Invalid user credentials");
-          }
+          }      
+          else if (user[0].userrole === "Job Provider") {
+            localStorage.setItem("isAutthenticated", true);
+            localStorage.setItem("id", user[0].id);
+            localStorage.setItem("uname", user[0].username);
+            Navigate("/Jobprovider/dashboard");
+            context.login(user[0]);
+          } else if (user[0].userrole === "Job Seeker") {
+            localStorage.setItem("isAutthenticated", true);
+            localStorage.setItem("id", user[0].id);
+            localStorage.setItem("uname", user[0].username);
+            Navigate("/Jobseeker/dashboard");
+            context.login(user[0]);
+          } 
         }
       }
     }

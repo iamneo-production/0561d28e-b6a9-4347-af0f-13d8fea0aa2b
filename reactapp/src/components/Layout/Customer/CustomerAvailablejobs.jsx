@@ -22,8 +22,8 @@ function CustomerAvailablejobs() {
           Id={item.jobId}
           job_discription={item.jobDescription}
           wage_for_day={item.wagePerDay}
-          from_date={item.fromDate.split('T')[0]}
-          to_date={item.toDate.split('T')[0]}
+          from_date={item.fromDate.split(' ')[0]}
+          to_date={item.toDate.split(' ')[0]}
           job_location={item.jobLocation}
           phone_number={item.phone}
         />

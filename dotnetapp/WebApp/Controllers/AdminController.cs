@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace CookHiring.Controllers
         }
         [Route("admin/editUser/{id}")]
         [HttpPut]
-        public string editUserDetails(UserModel user, int id)
+        public string editUserDetails([FromBody] UserModel user, int id)
         {
             return bsl.editUserDetails(user, id);
         }
@@ -41,8 +42,8 @@ namespace CookHiring.Controllers
             return users;
         }
         [Route("admin/deleteCandidate/{id}")]
-        [HttpPost]
-        public string deleteCandidates(int id)
+        [HttpDelete]
+        public JsonResult deleteCandidates(int id)
         {
             return bsl.deleteCandidates(id);
         }

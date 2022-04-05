@@ -37,11 +37,11 @@ namespace CookHiring.Controllers
         {
             return bsl.deleteUser(UserId);
         }
-        [Route("jobSeeker/applyJob")]
+        [Route("jobSeeker/applyJob/{id}")]
         [HttpPost]
-        public string applyJob(string jobSeekerId, string JobId)
+        public string applyJob([FromBody] JobSeekerModel jobSeeker, int id)
         {
-            return bsl.applyJob(jobSeekerId, JobId);
+            return bsl.applyJob(jobSeeker, id);
         }
         [Route("jobseeker/getAppliedJobs")]
         [HttpGet]

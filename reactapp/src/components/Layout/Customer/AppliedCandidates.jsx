@@ -1,8 +1,7 @@
 import Card from "../../UI/Card";
 import { Col, Row, Button } from "react-bootstrap";
 import classes from "./AppliedCandidates.module.css";
-import React, { useContext, useEffect, useState } from 'react';
-import JobProviderContext from "../../../store/Customer/JobProviderContext";
+import React, { useEffect, useState } from 'react';
 import { Variable } from "../../../Variable";
 import axios from 'axios';
 
@@ -23,6 +22,7 @@ function AppliedCandidates(props) {
     });
     window.location.reload();
   }
+ 
   const Reject = (id, jobId) =>
   {
     let res;
@@ -38,37 +38,38 @@ function AppliedCandidates(props) {
     });
     window.location.reload();
   }
-  const Check = () =>
+  const Check=()=>
   {
     let isCancelled = false;
     useEffect(() => {
       axios
-        .get('https://localhost:44375/jobprovider/job/checkCandidate/' + props.Id + "," + localStorage.getItem('jobId'))
-        .then(res => {
+        .get(Variable.API_URL + 'jobprovider/job/checkCandidate/' + props.Id + "," + localStorage.getItem('jobId'))
+        .then(  (res) => {
           if(!isCancelled)
-            setRes(res.data);
-        })
+         setRes(res.data);
+        }).then(()=> console.log(res))
+       
         .catch(err => {
           console.log(err)
         });
         return () => {
           isCancelled = true
         };
-    });
+    },[]);
     console.log(res);
   
-    if(res === "0")
+    if(res === "0"|| res === 0)
     {
       return <Col className="d-flex justify-content-d-flex justify-content-around">
       <Button id="chatButton" onClick={event => Accept(props.Id, localStorage.getItem('jobId'))}>accept</Button>
       <Button id="chatButton" onClick={event => Reject(props.Id, localStorage.getItem('jobId'))}>Decline</Button>
       </Col>
     }
-    else if(res === "1")
+    else if(res === "1" ||res===1)
     {
       return <Row><div className="bg-success text-white text-center" style={{width: '40%', marginLeft: '30%', borderRadius: '50px'}}>Accepted</div></Row>
     }
-    else
+    else if(res===2 ||res==='2')
     {
       return <Row><div className="bg-danger text-white text-center" style={{width: '40%', marginLeft: '30%', borderRadius: '50px'}}>Rejected</div></Row>
     }

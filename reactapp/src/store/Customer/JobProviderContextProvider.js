@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback} from "react";
 import JobProviderContext from "./JobProviderContext";
 import { Variable } from "../../Variable";
 import {  useNavigate } from "react-router-dom";
-import axios from "axios";
+
 
 
 const JobProviderContextProvider = (props) => {
@@ -78,7 +78,7 @@ const JobProviderContextProvider = (props) => {
       alert(error.message);
     }   
   }
-  const GetMyJobs=useCallback( async(id)=> {
+  const GetMyJobs = useCallback( async(id)=> {
     try {
       setisLoading(true);
       const response = await fetch(Variable.API_URL + `jobprovider/myJobs/${id}`);
@@ -95,8 +95,9 @@ const JobProviderContextProvider = (props) => {
   },[]);
   async function GetCandidates(id) {
     setisLoading(true);
+    console.log(id[0],localStorage.getItem('id'))
     try {
-      const response = await fetch(Variable.API_URL + `jobprovider/appliedCandidates?jobProviderId=` + localStorage.getItem('id') + `&jobId=`+ id);
+      const response = await fetch(Variable.API_URL + `jobprovider/appliedCandidates?jobProviderId=` + localStorage.getItem('id') + `&jobId=`+ id[0]);
       if (!response.ok) {
         throw new Error("Something went Wrong");
       }

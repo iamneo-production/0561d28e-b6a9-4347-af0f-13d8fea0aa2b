@@ -1,15 +1,15 @@
 import React, { useRef, useState } from "react";
 import { Button, Container, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { PostUserData } from "../Server/PostUserData";
-import { PostAdminData } from "../Server/PostAdminData";
+import { Variable } from '../Variable';
 
 const Auth = (props) => {
   const navigate = useNavigate();
   const [Err_msg, setErr_msg] = useState(false);
 
-  var regularExpression =
+ var regularExpression =
     /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+
 
   const User = useRef();
   const Email = useRef();
@@ -18,9 +18,8 @@ const Auth = (props) => {
   const Password = useRef();
   const Confirm_pass = useRef();
   const [isUsernameValid, setisUsernameValid] = useState();
-  const [isPhoneValid, setisPhoneValid] = useState();
   const [isEmailValid, setisEmailValid] = useState();
-  
+  const [isPhoneValid, setisPhoneValid] = useState();
   const [isPasswordValid, setisPasswordValid] = useState();
   const [isConfirmPassalid, setisConfirmPassValid] = useState();
   let formData = {};
@@ -47,7 +46,7 @@ const Auth = (props) => {
 
   const submit = (event) => {
     event.preventDefault();
-    formData.userRole = User.current.value;
+    formData.userrole = User.current.value;
     formData.email = Email.current.value;
     formData.username = Username.current.value;
     formData.mobileNumber = Phone_num.current.value;
@@ -56,7 +55,7 @@ const Auth = (props) => {
     setErr_msg(false);
     if (
       !(
-        formData.userRole &&
+        formData.userrole &&
         formData.email &&
         formData.username &&
         formData.mobileNumber &&
@@ -67,20 +66,62 @@ const Auth = (props) => {
       setErr_msg(true);
       return;
     }
-
-    if (formData.userRole === "Admin") {
-      if (PostAdminData) {
-        console.log("AAAA");
-        navigate("../login");
-      } else {
-        alert("Error occured..!");
+    let data = {
+      email: formData.email,
+      password: formData.password,
+      username: formData.username,
+      mobileNumber: formData.mobileNumber,
+      
+    }
+    if (formData.userrole === "Admin") {
+      PostAdminData(data);
+      async function PostAdminData(data) {
+        let res = await fetch(Variable.API_URL + "admin/signup",{
+            method: 'POST',
+            headers: {
+              'Accept':'application/json',
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+          res = await res.json();
+          console.log(res);
+        if(res === "true")
+        {
+          navigate("/login");
+        }
+        else if(res === "false")
+        {
+          alert("Email already exists");
+        }
+        else{
+          alert(res);
+        }
       }
     } else {
-      if (PostUserData(formData)) {
-        navigate("../login");
-      } else {
-        alert("Error occured..!");
-      }
+      PostUserData(formData);
+      async function PostUserData(formdata) {
+        let res = await fetch(Variable.API_URL + "user/signup",{
+            method: 'POST',
+            headers: {
+              'Accept':'application/json',
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+          res = await res.json();
+        if(res === "true")
+        {
+          navigate("/login");
+        }
+        else if(res === "false")
+        {
+          alert("Email already exists");
+        }
+        else{
+          alert(res);
+        }
+      }    
     }
   };
 

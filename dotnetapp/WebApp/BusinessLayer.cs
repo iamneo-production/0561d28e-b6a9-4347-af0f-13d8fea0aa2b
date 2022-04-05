@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNetCore.Mvc;
 using DatabaseController;
 using CookHiring.Models;
+
 
 namespace DatabaseController
 {
@@ -23,6 +25,10 @@ namespace DatabaseController
         public bool isAdminPresent(LoginModel login)
         {
             return dal.isAdminPresent(login);
+        }
+        public bool isAdminPres(string login)
+        {
+            return dal.isAdminPres(login);
         }
         public void saveUser(UserModel user)
         {
@@ -52,7 +58,7 @@ namespace DatabaseController
         {
             return dal.deleteUser(id);
         }
-        public string applyJob(string jobSeeker, string jobId)
+        public string applyJob(JobSeekerModel jobSeeker, int jobId)
         {
             return dal.applyJob(jobSeeker, jobId);
         }
@@ -129,7 +135,7 @@ namespace DatabaseController
         {
             return dal.editUserDetails(user, id);
         }
-        public string deleteCandidates(int id)
+        public JsonResult deleteCandidates(int id)
         {
             return dal.deleteCandidates(id);
         }

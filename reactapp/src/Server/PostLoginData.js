@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import axios from "axios";
-
+import { Variable } from "../Variable";
 export async function PostLoginData(payload) {
     let admin, user, userrole;
     const IsAdmin = (payload) => {
-      fetch('https://localhost:44375/admin/login',{
+      fetch(Variable.API_URL+'admin/login',{
         method: 'POST',
         headers: {
           'Accept':'application/json',
@@ -24,7 +24,7 @@ export async function PostLoginData(payload) {
       }
     }
     const IsUser = (payload) => {
-      fetch('https://localhost:44375/user/login',{
+      fetch(Variable.API_URL+'user/login',{
         method: 'POST',
         headers: {
           'Accept':'application/json',
@@ -52,7 +52,7 @@ export async function PostLoginData(payload) {
     {
       IsUser(payload);
     }
-    /*await fetch('https://localhost:44375/admin/login',{
+    /*await fetch('Variable.API_URL+'admin/login',{
         method: 'POST',
         headers: {
           'Accept':'application/json',
@@ -64,7 +64,7 @@ export async function PostLoginData(payload) {
       });*/
       if(!admin)
       {
-        /*await fetch('https://localhost:44375/user/login',{
+        /*await fetch('Variable.API_URL+'user/login',{
           method: 'POST',
           headers: {
             'Accept':'application/json',

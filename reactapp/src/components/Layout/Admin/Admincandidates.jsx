@@ -12,7 +12,7 @@ function Admincandidates(props) {
       { Context.getCandidates() }
       { Context.candidates.map((item, index) => 
         <Candidates
-          key={item.index}
+          key={index}
           item={item}
           Id={item.id}
           name={item.name}

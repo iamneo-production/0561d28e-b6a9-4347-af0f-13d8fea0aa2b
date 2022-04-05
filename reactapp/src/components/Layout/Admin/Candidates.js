@@ -14,6 +14,7 @@ function Candidates(props) {
     navigator(`/admin/editprofile/${props.Id}`);
   };
   const onDelete = () => {
+    console.log(props.Id);
     Context.candidateDelete(props.Id);
   };
   return (
@@ -49,10 +50,7 @@ function Candidates(props) {
                 <td>Email :</td>
                 <td>{props.email}</td>
               </tr>
-              <tr>
-                <td>Job Id :</td>
-                <td>{props.jobId}</td>
-              </tr>
+              
             </tbody>
           </table>
           

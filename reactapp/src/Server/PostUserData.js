@@ -1,7 +1,7 @@
 import { Variable } from "../Variable";
 
 export async function PostUserData(formData) {
-    let res = await fetch(Variable.API_URL + "/user/signup",{
+    let res = await fetch(Variable.API_URL + "user/signup",{
         method: 'POST',
         headers: {
           'Accept':'application/json',

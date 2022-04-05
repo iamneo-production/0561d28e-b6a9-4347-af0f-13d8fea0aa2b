@@ -8,12 +8,14 @@ function JobSeekerContextProvider(props) {
     const[Available_jobs,setAvailable_jobs]=useState([]);
     const [IsLoading, setisLoading] = useState(false);
     async function AddAppliyedJob(data, id){
-      let res = await fetch(Variable.API_URL + "jobSeeker/applyJob?jobSeekerId=" + localStorage.getItem('id') + "&JobId=" + id,{
+      let res = await fetch(Variable.API_URL + `jobSeeker/applyJob/${id}` ,{
         method: 'POST',
+        body:JSON.stringify(data),
         headers: {
           'Accept':'application/json',
           'Content-type': 'application/json'
         },
+
       });
       updateProfile(data);
       res = await res.json();

@@ -67,16 +67,19 @@ function Customeraddjob() {
   var data = {
     jobDescription: formData.jobDescription,
     jobLocation: formData.jobLocation,
-    fromDate: formData.fromDate.getFullYear() + "-" + formData.fromDate.getMonth() + 1 + "-" + formData.fromDate.getDay(),
-    toDate: formData.toDate.getFullYear() + "-" + formData.toDate.getMonth() + 1 + "-" + formData.toDate.getDay(),
+    fromDate: formData.fromDate,
+    toDate: formData.toDate,
     wagePerDay: formData.wagePerDay,
     mobileNumber: formData.phoneNumber
   }
+  console.log(data);
+
    Context.addNewJobs(data);
   }
    
   return <ContentContainer> 
        <form className="m-4 bg-light p-3 rounded " onSubmit={OnAddjob}>
+       
 
 <Row>
   <h3 style={{fontFamily: 'Courier-New'}}>Add Openings</h3>

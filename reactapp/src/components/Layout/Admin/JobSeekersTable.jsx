@@ -18,7 +18,7 @@ function JobSeekersTable() {
             </thead>
             <tbody>
                 {Context.getJobSeekers()}
-                {Context.jobSeekers.map((item, index) => <TableRow key={item.id}
+                {Context.jobSeekers.map((item, index) => <TableRow key={index}
                     item={item}
                     name={item.username}
                     id={item.id}

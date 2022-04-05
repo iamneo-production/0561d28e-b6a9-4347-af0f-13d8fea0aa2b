@@ -71,6 +71,7 @@ export default function Jobseekerapplyjob(props) {
       alert("Job already applied");
       navigator(-1);
     }*/
+    console.log(data,id);
     let res;
     alreadyApplied(data);
     async function alreadyApplied(data) 
@@ -86,6 +87,7 @@ export default function Jobseekerapplyjob(props) {
       if(!res)
       {
         Context.applyJob(data, id);
+        
         navigator(-1);
       }
       else

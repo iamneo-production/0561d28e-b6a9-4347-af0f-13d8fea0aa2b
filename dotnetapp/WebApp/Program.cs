@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CookHiring
+namespace WebApp
 {
     public class Program
     {

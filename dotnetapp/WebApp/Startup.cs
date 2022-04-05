@@ -9,12 +9,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 using System.Web.Http;
 
-namespace CookHiring
+namespace WebApp
 {
     public class Startup
     {
@@ -52,7 +53,7 @@ namespace CookHiring
 
             app.UseRouting();
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(options => options.WithOrigins("https://8081-feebbfbacaafdcfcdeddbaaeeeaeeccbdacfaebfdca.examlyiopb.examly.io").AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthorization();
 

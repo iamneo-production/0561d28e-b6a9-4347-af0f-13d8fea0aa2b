@@ -1,7 +1,8 @@
 import { Variable } from "../Variable";
 
 export async function PostAdminData(formData) {
-    let res = await fetch(Variable.API_URL + "/admin/signup",{
+  try{
+    let res = await fetch(Variable.API_URL + "admin/signup",{
         method: 'POST',
         headers: {
           'Accept':'application/json',
@@ -11,4 +12,8 @@ export async function PostAdminData(formData) {
       });
       res = await res.json();
     return res;
+  }
+  catch(e){
+    alert(e.message);
+  }
 }
