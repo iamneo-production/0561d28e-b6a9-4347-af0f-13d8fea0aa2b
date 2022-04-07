@@ -81,19 +81,6 @@ namespace DatabaseController
             bool flag = sd.Read() ? true : false;
             sqlcon.Close();
             return flag ;
-<<<<<<< HEAD
-=======
-        }
-        public bool isAdminPres(string email)
-        {
-            string sqlstring = "select 1 from admin where email='" + email + "'";
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
-            SqlDataReader sd = cmd.ExecuteReader();
-            bool flag = sd.Read() ? true : false;   
-            return flag;
->>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
         }
         public bool isAdminPres(string email)
         {
@@ -148,19 +135,13 @@ namespace DatabaseController
             {
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
-<<<<<<< HEAD
                 column["username"] = reader["username"].ToString();
                // column["name"] = reader["name"].ToString();
-=======
-                column["name"] = reader["username"].ToString();
->>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
                 column["email"] = reader["email"].ToString();
                 column["mobileNumber"] = reader["mobileNumber"].ToString();
-<<<<<<< HEAD
                 // column["experience"] = reader["experience"].ToString();
                 // column["address"] = reader["address"].ToString();
-=======
->>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
+
                 list.Add(column);
             }
             sqlcon.Close();
@@ -190,12 +171,9 @@ namespace DatabaseController
         }
         public object getJobSeeker()
         {
-<<<<<<< HEAD
             //string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
             string sql="select * from ch_user where userrole='Job Seeker'";
-=======
-            string sql = "select * from ch_user where userrole='Job Provider'";
->>>>>>> 92a1c9db7e3925ad4d62c56a84c075a202ede9db
+
             return executeGetJobSeeker(sql);
 
         }
@@ -696,5 +674,52 @@ namespace DatabaseController
             };
             return obj;
         }
+         public object totalUsers()
+        {
+            SqlConnection sqlcon = new SqlConnection(con);
+            sqlcon.Open();
+            //Total Users
+            SqlCommand cmd = new SqlCommand("select count(id) from ch_user", sqlcon);
+            int total = int.Parse(cmd.ExecuteScalar().ToString());
+            //Job Seeker
+            string qry1 = "",qry2="";
+          
+                qry1 = "Select count(id) from ch_user where userrole = 'Job Seeker'";
+            
+          
+            cmd = new SqlCommand(qry1, sqlcon);
+            int jobSeekerCount = int.Parse(cmd.ExecuteScalar().ToString());
+            //Job Provider
+          
+                qry2 = "select count(id) from ch_user where userrole = 'Job Provider'";
+          
+            cmd = new SqlCommand(qry2, sqlcon);
+            int jobProviderCount = int.Parse(cmd.ExecuteScalar().ToString());
+            DateTime today = DateTime.Today;
+           // active Jobs
+            cmd = new SqlCommand("select count(jobProviderId) from job where toDate >= '"+ today.ToString("yyyy-MM-dd")+ "'" , sqlcon);
+            int activeJobs = int.Parse(cmd.ExecuteScalar().ToString());
+            //total jobs
+            cmd = new SqlCommand("select count(jobId) from job", sqlcon);
+            int totalJobs = int.Parse(cmd.ExecuteScalar().ToString());
+            //Available jobs
+            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 0 and j.toDate >= '" + today.ToString("yyyy-MM-dd") + "'", sqlcon);
+            int waiting = int.Parse(cmd.ExecuteScalar().ToString());
+            //Accepted Jobs
+            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 1 ", sqlcon);
+            int accepted = int.Parse(cmd.ExecuteScalar().ToString());
+            var obj = new
+            {
+                total = total,
+                jobSeeker = jobSeekerCount,
+                jobProvider = jobProviderCount,
+                totalJobs = totalJobs,
+                activeJobs = activeJobs,
+                waiting = waiting,
+                accepted = accepted
+            };
+            return obj;
+        }
+
     }
 }
