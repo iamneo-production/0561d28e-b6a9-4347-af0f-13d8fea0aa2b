@@ -273,7 +273,7 @@ namespace DatabaseController
                  string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + user.personId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
 
                 string sql2="insert into jobSeeker(id, name, address,experience,phone,email) values("+user.personId+",'"+user.personName+"','"+user.personAddress+"','"+user.personExp+"','"+user.personPhone+"','"+user.email+"')";
-                string sql3="update jobSeeker set name ='"+user.personName+"',address='"+user.personAddress+"',experience='"+user.personExp+"',phone='"+user.personPhone +"',email='"+user.email+"')";
+                string sql3="update jobSeeker set name ='"+user.personName+"',address='"+user.personAddress+"',experience='"+user.personExp+"',phone='"+user.personPhone +"',email='"+user.email+"'";
                if(isprofilePres(user.personId))
                {
                 Execute(sql3);
