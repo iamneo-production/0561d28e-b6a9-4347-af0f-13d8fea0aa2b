@@ -619,7 +619,7 @@ namespace DatabaseController
         }
 
         //Report
-        public object totalUsers(string location)
+        public object totalUsersLoc(string location)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
