@@ -9,33 +9,15 @@ namespace CookHiring.Controllers
         
         [Route("admin/report/totalUsers")]
         [HttpGet]
-        public int totalUsers()
+        public object totalUsers()
         {
             return bsl.totalUsers();
         }
-        [Route("admin/report/totalJobSeekers")]
+        [Route("admin/report/totalUsers/{location}")]
         [HttpGet]
-        public int totalJobSeekers()
+        public object totalUsersLoc(string location)
         {
-            return bsl.totalJobSeekers();
-        }
-        [Route("admin/report/totalJobProviders")]
-        [HttpGet]
-        public int totalJobProviders()
-        {
-            return bsl.totalJobProviders();
-        }
-        [Route("admin/report/search/{location}")]
-        [HttpGet]
-        public object totalJobsByLocation(string location)
-        {
-            return bsl.totalJobsByLocation(location);
-        }
-        [Route("admin/report/review/avgRating")]
-        [HttpGet]
-        public float avgRating()
-        {
-            return bsl.avgRating();
+            return bsl.totalUsersLoc(location);
         }
     }
 }
