@@ -158,25 +158,13 @@ namespace DatabaseController
         }
 
         //Report
-        public int totalUsers()
+      public object totalUsers()
         {
             return dal.totalUsers();
         }
-        public int totalJobSeekers()
+            public object totalUsersLoc(string loc)
         {
-            return dal.totalJobSeekers();
-        }
-        public int totalJobProviders()
-        {
-            return dal.totalJobProviders();
-        }
-        public object totalJobsByLocation(string location)
-        {
-            return dal.totalJobsByLocation(location);
-        }
-        public float avgRating()
-        {
-            return dal.avgRating();
+            return dal.totalUsersLoc(loc);
         }
     }
 }
