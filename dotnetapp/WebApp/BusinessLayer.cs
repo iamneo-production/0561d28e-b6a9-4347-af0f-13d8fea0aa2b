@@ -30,10 +30,7 @@ namespace DatabaseController
         {
             return dal.isAdminPresent(login);
         }
-        public bool isAdminPres(string login)
-        {
-            return dal.isAdminPres(login);
-        }
+     
         public void saveUser(UserModel user)
         {
             if (user.userrole == "Job Seeker")
