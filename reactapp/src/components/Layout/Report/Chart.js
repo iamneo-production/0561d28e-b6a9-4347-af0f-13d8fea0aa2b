@@ -3,12 +3,10 @@ import { PieChart } from '@rsuite/charts';
 
 export default function Chart(props) {
     
-    const [totalJobSeeker, setTotalJobSeeker] = useState(70);
-    const [totalJobProvider, setTotalJobProvider] = useState(30);
     const Data = [
        
-        [props.item1, props.item1data],
         [props.item2, props.item2data],
+        [props.item3, props.item3data]
     ];
 
     return (
