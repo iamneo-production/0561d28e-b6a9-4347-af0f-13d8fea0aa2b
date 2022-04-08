@@ -1,24 +1,80 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Card from "./../../UI/Card";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import Chart from "./Chart";
+import Chart from "../Admin/Chart";
+import JobChart from "./JobChart";
+import axios from "axios";
 
-function Report() {
+const Report = () => {
   const data = useRef();
   const [isVisible, setisVisible] = useState(false);
   const ViewChart = () => {
     setisVisible(!isVisible);
   };
+  
+  const [t, setT] = useState(0);
+  const [js, setJs] = useState(0);
+  const [jp, setJp] = useState(0);
+  const [tj, setTj] = useState(0);
+  const [aj, setAj] = useState(0);
+  const [w, setW] = useState(0);
+  const [a, setA] = useState(0);
   const Reportdata = [
     {
-      jobProviders: 200,
-      jobSeekers: 400,
-      jobsAvailabe: 300,
-      jobsTaken: 150,
+      total: t,
+      jobProviders: jp,
+      jobSeekers: js,
+      totalJobs: tj,
+      jobsAvailabe: aj,
+      jobsTaken: a,
+      jobsWaiting: w,
     },
   ];
+  const GetInitails = () => {
+    useEffect(() => {
+      axios
+        .get('https://localhost:44375/admin/report/totalUsers/%20')
+        .then(res => {
+          setT(res.data.total);
+          setJs(res.data.jobSeeker);
+          setJp(res.data.jobProvider);
+          setTj(res.data.totalJobs);
+          setAj(res.data.activeJobs);
+          setW(res.data.waiting);
+          setA(res.data.accepted);
+
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }, []);
+  }
+  async function GetDetails(data)
+  {
+    if(data === "")
+    {
+      data += "%20";
+    }
+    let res = await fetch('https://localhost:44375/admin/report/totalUsers/' + data,{
+        method: 'GET',
+        headers: {
+          'Accept':'application/json',
+          'Content-type': 'application/json'
+        },
+      });
+      res = await res.json();
+      setT(res.total);
+          setJs(res.jobSeeker);
+          setJp(res.jobProvider);
+          setTj(res.totalJobs);
+          setAj(res.activeJobs);
+          setW(res.waiting);
+          setA(res.accepted);
+  }
+
   return (
     <div className="mx-5">
+          {GetInitails()}
       <Card>
         <form>
           <Row>
@@ -36,6 +92,7 @@ function Report() {
               <Button
                 variant="primary text-center"
                 id="search"
+                onClick={event => GetDetails(data.current.value)}
                 style={{ borderRadius: "50px", height: "40px", width: "100px" }}
               >
                 Search
@@ -89,7 +146,7 @@ function Report() {
                 <Row>
                   <Col>
                     <Row>
-                      <h5>Active jobs</h5>
+                      <h5>Total jobs</h5>
                     </Row>
                     <Row>
                       <h6>{item.jobsAvailabe + item.jobsTaken}</h6>
@@ -111,6 +168,14 @@ function Report() {
                       <h6>{item.jobsTaken}</h6>
                     </Row>
                   </Col>
+                  <Col>
+                    <Row>
+                      <h5>Jobs Waiting</h5>
+                    </Row>
+                    <Row>
+                      <h6>{item.jobsWaiting}</h6>
+                    </Row>
+                  </Col>
                 </Row>
               </Col>
             </Row>
@@ -118,18 +183,24 @@ function Report() {
               <Row>
                 <Col sm={6}>
                   <Chart
-                    item1={"Job Seeker"}
+                    item1={"Total Users"}
                     item2={"Job Provider"}
-                    item1data={item.jobSeekers}
+                    item3={"Job Seeker"}
+                    item1data={item.total}
                     item2data={item.jobProviders}
+                    item3data={item.jobSeekers}
                   />
                 </Col>
                 <Col sm={6}>
-                  <Chart
-                    item1={"Available Jobs"}
-                    item2={"Jobs Taken"}
-                    item1data={item.jobsAvailabe}
-                    item2data={item.jobsTaken}
+                  <JobChart
+                    item1={"Total Jobs"}
+                    item2={"Jobs Available"}
+                    item3={"Jobs Taken"}
+                    item4={"Jobs Waiting"}
+                    item1data={item.totalJobs}
+                    item2data={item.jobsAvailabe}
+                    item3data={item.jobsTaken}
+                    item4data={item.jobsWaiting}
                   />
                 </Col>
               </Row>
