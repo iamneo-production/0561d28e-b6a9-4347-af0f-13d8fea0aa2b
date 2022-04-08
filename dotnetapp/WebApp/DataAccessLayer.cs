@@ -1,19 +1,17 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Web;
 using System.Data;
 using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+using System.Configuration;
 using CookHiring.Models;
 
 namespace DatabaseController
 {
     public class DataAccessLayer
     {
-        private string con = "Server=0.0.0.0;Data Source=.;User id=sa;Password=examlyMssql@123;Initial Catalog=CookHiring;";
+        private string con = "Data Source=LAPTOP-FKFUSU87\\SQLEXPRESS; Initial Catalog=Virtusa; Integrated Security=True";
         //Common Methods
         public void Execute(string sqlstring)
         {
@@ -89,9 +87,10 @@ namespace DatabaseController
             sqlcon.Open();
             SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
             SqlDataReader sd = cmd.ExecuteReader();
-            bool flag = sd.Read() ? true : false;
+            bool flag = sd.Read() ? true : false;   
             return flag;
-        }        public int getUserId(string sqlstring)
+        }
+        public int getUserId(string sqlstring)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
@@ -104,15 +103,15 @@ namespace DatabaseController
         public void insertJobSeeker(UserModel user)
         {
             string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
-            // int id = getUserId(sql);
-            // sql = "Insert into jobSeeker(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            int id = getUserId(sql);
+            sql = "Insert into jobSeeker(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
             Execute(sql);
         }
         public void insertJobProvider(UserModel user)
         {
             string sql = "Insert into ch_user(userrole, username, email, password, mobileNumber) values('" + user.userrole + "', '" + user.username + "', '" + user.email + "', '" + user.password + "', '" + user.mobileNumber + "'); select @@Identity";
-            // int id = getUserId(sql);
-            // sql = "Insert into jobProvider(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
+            int id = getUserId(sql);
+            sql = "Insert into jobProvider(id, phone, email) values(" + id + ", '" + user.mobileNumber + "', '" + user.email + "')";
             Execute(sql);
         }
         public void insertAdmin(AdminModel admin)
@@ -135,13 +134,9 @@ namespace DatabaseController
             {
                 column = new Dictionary<string, string>();
                 column["id"] = reader["id"].ToString();
-                column["username"] = reader["username"].ToString();
-               // column["name"] = reader["name"].ToString();
+                column["name"] = reader["username"].ToString();
                 column["email"] = reader["email"].ToString();
                 column["mobileNumber"] = reader["mobileNumber"].ToString();
-                // column["experience"] = reader["experience"].ToString();
-                // column["address"] = reader["address"].ToString();
-
                 list.Add(column);
             }
             sqlcon.Close();
@@ -171,9 +166,7 @@ namespace DatabaseController
         }
         public object getJobSeeker()
         {
-            //string sql = "select ch_user.id, ch_user.username, ch_user.email, ch_user.password, ch_user.mobileNumber, jobSeeker.name, jobSeeker.address, jobSeeker.experience from ch_user inner join jobSeeker on ch_user.id = jobSeeker.id and ch_user.userrole='Job Seeker'";
-            string sql="select * from ch_user where userrole='Job Seeker'";
-
+            string sql = "select * from ch_user where userrole='Job Seeker'";
             return executeGetJobSeeker(sql);
 
         }
@@ -255,33 +248,12 @@ namespace DatabaseController
                 return "Bad Request";
             }
         }
-           public bool isprofilePres(int id)
-        {
-            string sqlstring = "select 1 from jobSeeker where email='" + id + "'";
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            SqlCommand cmd = new SqlCommand(sqlstring, sqlcon);
-            SqlDataReader sd = cmd.ExecuteReader();
-            bool flag = sd.Read() ? true : false;
-            return flag;
-        }
 
-        public string applyJob(JobSeekerModel user, int jobId)
+        public string applyJob(string jobSeekerId, string jobId)
         {
             try
             {
-                 string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + user.personId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
-
-                string sql2="insert into jobSeeker(id, name, address,experience,phone,email) values("+user.personId+",'"+user.personName+"','"+user.personAddress+"','"+user.personExp+"','"+user.personPhone+"','"+user.email+"')";
-                string sql3="update jobSeeker set name ='"+user.personName+"',address='"+user.personAddress+"',experience='"+user.personExp+"',phone='"+user.personPhone +"',email='"+user.email+"'";
-               if(isprofilePres(user.personId))
-               {
-                Execute(sql3);
-               }
-               else{
-                   Execute(sql2);
-                   
-               }
+                string sql = "insert into appliedJobs(jobId, jobSeekerId, jobProviderId, selected) values(" + jobId + ", " + jobSeekerId + ", (select jobProviderId from job where jobId= " + jobId + ")," + "0" + ")";
                 Execute(sql);
                 return "Job applied";
             }
@@ -522,7 +494,7 @@ namespace DatabaseController
                 column["phone"] = reader["phone"].ToString();
                 column["email"] = reader["email"].ToString();
                 column["experience"] = reader["experience"].ToString();
-               // column["jobId"] = reader["jobId"].ToString();
+                column["jobId"] = reader["jobId"].ToString();
                 list.Add(column);
             }
             sqlcon.Close();
@@ -530,7 +502,7 @@ namespace DatabaseController
         }
         public object candidates()
         {
-            string sql = "select * from jobSeeker;";
+            string sql = "select id, name, address, experience, phone, email, jobId from jobSeeker as j left join appliedJobs as a on j.id = a.jobSeekerId;";
             return executeCandidates(sql);
         }
 
@@ -562,19 +534,17 @@ namespace DatabaseController
                 return "Bad Request";
             }
         }
-        public JsonResult deleteCandidates(int id)
+        public string deleteCandidates(int id)
         {
             try
             {
-                string sql1 = "delete from jobSeeker where id=" + id;
-                Execute(sql1);
                 string sql = "delete from appliedJobs where jobSeekerId=" + id;
                 Execute(sql);
-                return  new JsonResult("Candidate deleted") ;
+                return "Candidate deleted";
             }
             catch (Exception e)
             {
-                return  new JsonResult("Bad Request");
+                return "Bad Request";
             }
         }
         public string editProfile(string id, AdminModel data)
@@ -619,7 +589,7 @@ namespace DatabaseController
         }
 
         //Report
-        public object totalUsersLoc(string location)
+        public object totalUsers(string location)
         {
             SqlConnection sqlcon = new SqlConnection(con);
             sqlcon.Open();
@@ -661,52 +631,6 @@ namespace DatabaseController
             int waiting = int.Parse(cmd.ExecuteScalar().ToString());
             //Accepted Jobs
             cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 1 and j.jobLocation like '" + location + "%'", sqlcon);
-            int accepted = int.Parse(cmd.ExecuteScalar().ToString());
-            var obj = new
-            {
-                total = total,
-                jobSeeker = jobSeekerCount,
-                jobProvider = jobProviderCount,
-                totalJobs = totalJobs,
-                activeJobs = activeJobs,
-                waiting = waiting,
-                accepted = accepted
-            };
-            return obj;
-        }
-         public object totalUsers()
-        {
-            SqlConnection sqlcon = new SqlConnection(con);
-            sqlcon.Open();
-            //Total Users
-            SqlCommand cmd = new SqlCommand("select count(id) from ch_user", sqlcon);
-            int total = int.Parse(cmd.ExecuteScalar().ToString());
-            //Job Seeker
-            string qry1 = "",qry2="";
-          
-                qry1 = "Select count(id) from ch_user where userrole = 'Job Seeker'";
-            
-          
-            cmd = new SqlCommand(qry1, sqlcon);
-            int jobSeekerCount = int.Parse(cmd.ExecuteScalar().ToString());
-            //Job Provider
-          
-                qry2 = "select count(id) from ch_user where userrole = 'Job Provider'";
-          
-            cmd = new SqlCommand(qry2, sqlcon);
-            int jobProviderCount = int.Parse(cmd.ExecuteScalar().ToString());
-            DateTime today = DateTime.Today;
-           // active Jobs
-            cmd = new SqlCommand("select count(jobProviderId) from job where toDate >= '"+ today.ToString("yyyy-MM-dd")+ "'" , sqlcon);
-            int activeJobs = int.Parse(cmd.ExecuteScalar().ToString());
-            //total jobs
-            cmd = new SqlCommand("select count(jobId) from job", sqlcon);
-            int totalJobs = int.Parse(cmd.ExecuteScalar().ToString());
-            //Available jobs
-            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 0 and j.toDate >= '" + today.ToString("yyyy-MM-dd") + "'", sqlcon);
-            int waiting = int.Parse(cmd.ExecuteScalar().ToString());
-            //Accepted Jobs
-            cmd = new SqlCommand("select count(a.jobSeekerId) from appliedJobs a join job as j on a.jobId = j.jobId where selected = 1 ", sqlcon);
             int accepted = int.Parse(cmd.ExecuteScalar().ToString());
             var obj = new
             {
